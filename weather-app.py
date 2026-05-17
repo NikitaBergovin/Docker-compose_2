@@ -4,11 +4,10 @@ import requests
 
 app = Flask(__name__)
 
-
 @app.route("/weather")
 def weather():
     api_key = os.getenv("OPENWEATHER_API_KEY")
-    city = "Moscow"
+    city = "Vladimir"
 
     url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric&lang=ru"
 
@@ -28,7 +27,6 @@ def weather():
 
     except Exception as e:
         return f"Ошибка сервера: {str(e)}"
-
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
