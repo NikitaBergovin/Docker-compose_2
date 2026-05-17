@@ -1,8 +1,9 @@
-from flask import Flask, jsonify
+from flask import Flask
 import os
 import requests
 
 app = Flask(__name__)
+
 
 @app.route("/weather")
 def weather():
@@ -10,13 +11,24 @@ def weather():
     city = "Moscow"
 
     url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric&lang=ru"
-    data = requests.get(url).json()
 
-    return jsonify({
-        "city": data["name"],
-        "temp": data["main"]["temp"],
-        "description": data["weather"][0]["description"],
-        "version": "v1"
-    })
+    try:
+        response = requests.get(url)
+        data = response.json()
 
-app.run(host="0.0.0.0", port=5000)
+        if response.status_code != 200:
+            return f"Ошибка: {data.get('message', 'не удалось получить данные')}"
+
+        city_name = data["name"]
+        temp = round(data["main"]["temp"])
+        description = data["weather"][0]["description"]
+
+        # Возвращаем обычный понятный текст
+        return f"Город: {city_name}\nТемпература: {temp}°C\nПогода: {description}"
+
+    except Exception as e:
+        return f"Ошибка сервера: {str(e)}"
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
